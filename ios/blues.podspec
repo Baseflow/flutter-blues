@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'blues'
-  s.version          = '0.0.1'
+  s.version          = '1.0.0'
   s.summary          = 'Bluetooth Low Energy plugin for Flutter.'
   s.description      = <<-DESC
   This plugin provides a cross-platform (Android, iOS) API to access platform specific Bluetooth Low Energy services.

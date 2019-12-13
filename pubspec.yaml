@@ -1,6 +1,6 @@
 name: blues
 description: Bluetooth Low Energy plugin for Flutter. This plugin provides a cross-platform (Android, iOS) API to access platform specific Bluetooth Low Energy services.
-version: 0.0.1
+version: 1.0.0
 author: Baseflow <hello@baseflow.com>
 homepage: https://github.com/Baseflow/blues
 
