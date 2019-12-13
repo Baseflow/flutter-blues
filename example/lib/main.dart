@@ -142,8 +142,8 @@ class FindDevicesScreen extends StatelessWidget {
           } else {
             return FloatingActionButton(
                 child: Icon(Icons.search),
-                onPressed: () => Blues.instance
-                    .startScan(timeout: Duration(seconds: 4)));
+                onPressed: () =>
+                    Blues.instance.startScan(timeout: Duration(seconds: 4)));
           }
         },
       ),
