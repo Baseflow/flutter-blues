@@ -57,7 +57,7 @@ import io.flutter.plugin.common.PluginRegistry.RequestPermissionsResultListener;
 public class BluesPlugin implements MethodCallHandler, RequestPermissionsResultListener  {
   private static final String TAG = "BluesPlugin";
   private static final String NAMESPACE = "plugins.baseflow.com/blues";
-  private static final int REQUEST_COARSE_LOCATION_PERMISSIONS = 1452;
+  private static final int REQUEST_FINE_LOCATION_PERMISSIONS = 1452;
   static final private UUID CCCD_ID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
   private final Registrar registrar;
   private final Activity activity;
@@ -71,6 +71,8 @@ public class BluesPlugin implements MethodCallHandler, RequestPermissionsResultL
   // Pending call and result for startScan, in the case where permissions are needed
   private MethodCall pendingCall;
   private Result pendingResult;
+  private ArrayList<String> macDeviceScanned = new ArrayList<>();
+  private boolean allowDuplicates = false;
 
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
@@ -147,14 +149,14 @@ public class BluesPlugin implements MethodCallHandler, RequestPermissionsResultL
 
       case "startScan":
       {
-        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)
+        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
           ActivityCompat.requestPermissions(
                   activity,
                   new String[] {
-                          Manifest.permission.ACCESS_COARSE_LOCATION
+                          Manifest.permission.ACCESS_FINE_LOCATION
                   },
-                  REQUEST_COARSE_LOCATION_PERMISSIONS);
+                  REQUEST_FINE_LOCATION_PERMISSIONS);
           pendingCall = call;
           pendingResult = result;
           break;
@@ -547,12 +549,12 @@ public class BluesPlugin implements MethodCallHandler, RequestPermissionsResultL
   @Override
   public boolean onRequestPermissionsResult(
           int requestCode, String[] permissions, int[] grantResults) {
-    if (requestCode == REQUEST_COARSE_LOCATION_PERMISSIONS) {
+    if (requestCode == REQUEST_FINE_LOCATION_PERMISSIONS) {
       if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
         startScan(pendingCall, pendingResult);
       } else {
         pendingResult.error(
-                "no_permissions", "flutter_blue plugin requires location permissions for scanning", null);
+                "no_permissions", "Blues plugin requires location permissions for scanning", null);
         pendingResult = null;
         pendingCall = null;
       }
@@ -640,8 +642,10 @@ public class BluesPlugin implements MethodCallHandler, RequestPermissionsResultL
 
     @Override
     public void onCancel(Object o) {
-      sink = null;
-      activity.unregisterReceiver(mReceiver);
+      if(sink != null) {
+        sink = null;
+        registrar.activity().unregisterReceiver(mReceiver);
+      }
     }
   };
 
@@ -650,6 +654,7 @@ public class BluesPlugin implements MethodCallHandler, RequestPermissionsResultL
     Protos.ScanSettings settings;
     try {
       settings = Protos.ScanSettings.newBuilder().mergeFrom(data).build();
+      allowDuplicates = settings.getAllowDuplicates();
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
         startScan21(settings);
       } else {
@@ -678,9 +683,13 @@ public class BluesPlugin implements MethodCallHandler, RequestPermissionsResultL
 
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
-          super.onScanResult(callbackType, result);
-          Protos.ScanResult scanResult = ProtoMaker.from(result.getDevice(), result);
-          invokeMethodUIThread("ScanResult", scanResult.toByteArray());
+            super.onScanResult(callbackType, result);
+            if (!allowDuplicates && result != null && result.getDevice() != null && result.getDevice().getAddress() != null) {
+                if (macDeviceScanned.contains(result.getDevice().getAddress())) return;
+                macDeviceScanned.add(result.getDevice().getAddress());
+            }
+            Protos.ScanResult scanResult = ProtoMaker.from(result.getDevice(), result);
+            invokeMethodUIThread("ScanResult", scanResult.toByteArray());
         }
 
         @Override
@@ -728,8 +737,13 @@ public class BluesPlugin implements MethodCallHandler, RequestPermissionsResultL
         @Override
         public void onLeScan(final BluetoothDevice bluetoothDevice, int rssi,
                              byte[] scanRecord) {
-          Protos.ScanResult scanResult = ProtoMaker.from(bluetoothDevice, scanRecord, rssi);
-          invokeMethodUIThread("ScanResult", scanResult.toByteArray());
+            if (!allowDuplicates && bluetoothDevice != null && bluetoothDevice.getAddress() != null) {
+                if (macDeviceScanned.contains(bluetoothDevice.getAddress())) return;
+                macDeviceScanned.add(bluetoothDevice.getAddress());
+            }
+
+            Protos.ScanResult scanResult = ProtoMaker.from(bluetoothDevice, scanRecord, rssi);
+            invokeMethodUIThread("ScanResult", scanResult.toByteArray());
         }
       };
     }

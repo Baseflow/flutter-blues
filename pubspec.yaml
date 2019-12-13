@@ -13,8 +13,8 @@ dependencies:
   collection: ^1.14.11
   convert: ^2.1.1
   meta: ^1.1.7
-  protobuf: ^1.0.0
-  rxdart: ^0.22.0
+  protobuf: ^1.0.1
+  rxdart: ^0.22.6
 
 dev_dependencies:
   flutter_test:

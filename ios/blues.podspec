@@ -10,18 +10,23 @@ Pod::Spec.new do |s|
   This plugin provides a cross-platform (Android, iOS) API to access platform specific Bluetooth Low Energy services.
                        DESC
   s.homepage         = 'https://github.com/Baseflow/blues'
-  s.license          = { :file => '../LICENSE' }
+  s.license          = { :file => '../LICENSE', :type => 'BSD'}
   s.author           = { 'Baseflow' => 'hello@baseflow.com' }
   s.source           = { :path => '.' }
-  s.source_files = 'Classes/**/*'
-  s.public_header_files = 'Classes/**/*.h'
+  s.source_files = 'Classes/*.m', 'Headers/*.h', 'gen/*.pbobjc.{h,m}'
+  s.public_header_files = 'Headers/BluesPlugin.h'
   s.dependency 'Flutter'
-  s.platform = :ios, '8.0'
+  s.dependency 'Protobuf', '~> 3.9', '>= 3.9.2'
+  s.cocoapods_version = '>= 1.4.0'
+  s.static_framework = false
+  s.prefix_header_file = false
+
+  s.platform = :ios, '10.0'
   s.framework = 'CoreBluetooth'
 
   s.subspec 'Protos' do |ss|
-    ss.source_files = 'gen/**/*.pbobjc.{h,m}'
-    ss.header_mappings_dir = '.'
+    ss.source_files = 'gen/*.pbobjc.{h,m}', 'Headers/FlutterBluePlugin.h'
+    ss.public_header_files = 'Headers/FlutterBluePlugin.h', 'gen/*.pbobjc.h'
     ss.requires_arc = false
     ss.dependency 'Protobuf'
   end

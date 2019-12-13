@@ -144,6 +144,7 @@ class ScanSettings extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('ScanSettings', createEmptyInstance: create)
     ..a<$core.int>(1, 'androidScanMode', $pb.PbFieldType.O3)
     ..pPS(2, 'serviceUuids')
+    ..aOB(3, 'allowDuplicates')
     ..hasRequiredFields = false
   ;
 
@@ -173,6 +174,15 @@ class ScanSettings extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(2)
   $core.List<$core.String> get serviceUuids => $_getList(1);
+
+  @$pb.TagNumber(3)
+  $core.bool get allowDuplicates => $_getBF(2);
+  @$pb.TagNumber(3)
+  set allowDuplicates($core.bool v) { $_setBool(2, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasAllowDuplicates() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearAllowDuplicates() => clearField(3);
 }
 
 class ScanResult extends $pb.GeneratedMessage {
