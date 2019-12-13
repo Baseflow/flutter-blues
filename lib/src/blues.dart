@@ -90,7 +90,7 @@ class Blues {
     final killStreams = <Stream>[];
     killStreams.add(_stopScanPill);
     if (timeout != null) {
-      killStreams.add(Observable.timer(null, timeout));
+      killStreams.add(Rx.timer(null, timeout));
     }
 
     // Clear scan results list
@@ -105,10 +105,10 @@ class Blues {
       rethrow;
     }
 
-    yield* Observable(Blues.instance._methodStream
-            .where((m) => m.method == "ScanResult")
-            .map((m) => m.arguments))
-        .takeUntil(Observable.merge(killStreams))
+    yield* Blues.instance._methodStream
+        .where((m) => m.method == "ScanResult")
+        .map((m) => m.arguments)
+        .takeUntil(Rx.merge(killStreams))
         .doOnDone(stopScan)
         .map((buffer) => protos.ScanResult.fromBuffer(buffer))
         .map((p) {
@@ -133,12 +133,12 @@ class Blues {
     bool allowDuplicates = false,
   }) async {
     await scan(
-            scanMode: scanMode,
-            withServices: withServices,
-            withDevices: withDevices,
-            timeout: timeout,
-            allowDuplicates: allowDuplicates,)
-        .drain();
+      scanMode: scanMode,
+      withServices: withServices,
+      withDevices: withDevices,
+      timeout: timeout,
+      allowDuplicates: allowDuplicates,
+    ).drain();
     return _scanResults.value;
   }
 
@@ -224,8 +224,7 @@ class ScanResult {
 
   ScanResult.fromProto(protos.ScanResult p)
       : device = BluetoothDevice.fromProto(p.device),
-        advertisementData =
-            AdvertisementData.fromProto(p.advertisementData),
+        advertisementData = AdvertisementData.fromProto(p.advertisementData),
         rssi = p.rssi;
 
   final BluetoothDevice device;

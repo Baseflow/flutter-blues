@@ -24,7 +24,7 @@ class BluetoothCharacteristic {
 
   BehaviorSubject<List<int>> _value;
 
-  Stream<List<int>> get value => Observable.merge([
+  Stream<List<int>> get value => Rx.merge([
         _value.stream,
         _onValueChangedStream,
       ]);
@@ -38,9 +38,8 @@ class BluetoothCharacteristic {
         secondaryServiceUuid = (p.secondaryServiceUuid.isNotEmpty)
             ? Guid(p.secondaryServiceUuid)
             : null,
-        descriptors = p.descriptors
-            .map((d) => BluetoothDescriptor.fromProto(d))
-            .toList(),
+        descriptors =
+            p.descriptors.map((d) => BluetoothDescriptor.fromProto(d)).toList(),
         properties = CharacteristicProperties.fromProto(p.properties),
         _value = BehaviorSubject.seeded(p.value);
 
@@ -48,8 +47,7 @@ class BluetoothCharacteristic {
       Blues.instance._methodStream
           .where((m) => m.method == "OnCharacteristicChanged")
           .map((m) => m.arguments)
-          .map(
-              (buffer) => protos.OnCharacteristicChanged.fromBuffer(buffer))
+          .map((buffer) => protos.OnCharacteristicChanged.fromBuffer(buffer))
           .where((p) => p.remoteId == deviceId.toString())
           .map((p) => BluetoothCharacteristic.fromProto(p.characteristic))
           .where((c) => c.uuid == uuid)
@@ -89,8 +87,7 @@ class BluetoothCharacteristic {
     return Blues.instance._methodStream
         .where((m) => m.method == "ReadCharacteristicResponse")
         .map((m) => m.arguments)
-        .map((buffer) =>
-            protos.ReadCharacteristicResponse.fromBuffer(buffer))
+        .map((buffer) => protos.ReadCharacteristicResponse.fromBuffer(buffer))
         .where((p) =>
             (p.remoteId == request.remoteId) &&
             (p.characteristic.uuid == request.characteristicUuid) &&
@@ -133,8 +130,7 @@ class BluetoothCharacteristic {
     return Blues.instance._methodStream
         .where((m) => m.method == "WriteCharacteristicResponse")
         .map((m) => m.arguments)
-        .map((buffer) =>
-            protos.WriteCharacteristicResponse.fromBuffer(buffer))
+        .map((buffer) => protos.WriteCharacteristicResponse.fromBuffer(buffer))
         .where((p) =>
             (p.request.remoteId == request.remoteId) &&
             (p.request.characteristicUuid == request.characteristicUuid) &&

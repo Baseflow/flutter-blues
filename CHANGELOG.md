@@ -1,3 +1,8 @@
+## 1.0.0+1
+
+* Make sure Dart code is formatted correctly;
+* Update to latest RxDart package.
+
 ## 1.0.0
 
 * Fork of the FlutterBlue plugin by Paul DeMarco with the following enhancements:
