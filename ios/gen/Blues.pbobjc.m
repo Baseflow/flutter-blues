@@ -298,6 +298,7 @@ typedef struct ProtosAdvertisementData__storage_ {
 
 @dynamic androidScanMode;
 @dynamic serviceUuidsArray, serviceUuidsArray_Count;
+@dynamic allowDuplicates;
 
 typedef struct ProtosScanSettings__storage_ {
   uint32_t _has_storage_[1];
@@ -328,6 +329,15 @@ typedef struct ProtosScanSettings__storage_ {
         .offset = (uint32_t)offsetof(ProtosScanSettings__storage_, serviceUuidsArray),
         .flags = GPBFieldRepeated,
         .dataType = GPBDataTypeString,
+      },
+      {
+        .name = "allowDuplicates",
+        .dataTypeSpecific.className = NULL,
+        .number = ProtosScanSettings_FieldNumber_AllowDuplicates,
+        .hasIndex = 1,
+        .offset = 2,  // Stored in _has_storage_ to save space.
+        .flags = GPBFieldOptional,
+        .dataType = GPBDataTypeBool,
       },
     };
     GPBDescriptor *localDescriptor =

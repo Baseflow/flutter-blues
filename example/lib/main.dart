@@ -113,7 +113,7 @@ class FindDevicesScreen extends StatelessWidget {
                 builder: (c, snapshot) => Column(
                   children: snapshot.data
                       .map(
-                        (r) => ScanResultTile(
+                        (ScanResult r) => ScanResultTile(
                           result: r,
                           onTap: () => Navigator.of(context)
                               .push(MaterialPageRoute(builder: (context) {
@@ -169,11 +169,11 @@ class DeviceScreen extends StatelessWidget {
   List<Widget> _buildServiceTiles(List<BluetoothService> services) {
     return services
         .map(
-          (s) => ServiceTile(
+          (BluetoothService s) => ServiceTile(
             service: s,
             characteristicTiles: s.characteristics
                 .map(
-                  (c) => CharacteristicTile(
+                  (BluetoothCharacteristic c) => CharacteristicTile(
                     characteristic: c,
                     onReadPressed: () => c.read(),
                     onWritePressed: () => c.write(_getRandomBytes()),
@@ -181,7 +181,7 @@ class DeviceScreen extends StatelessWidget {
                         c.setNotifyValue(!c.isNotifying),
                     descriptorTiles: c.descriptors
                         .map(
-                          (d) => DescriptorTile(
+                          (BluetoothDescriptor d) => DescriptorTile(
                             descriptor: d,
                             onReadPressed: () => d.read(),
                             onWritePressed: () => d.write(_getRandomBytes()),
