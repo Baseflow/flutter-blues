@@ -1,3 +1,7 @@
+## Flutter Blues is not supported anymore
+
+Due to better bluetooth plugins being available, we decided discontinue flutter_blues. For connecting and communication with BLE devices we recommend using flutter_reactive_ble. 
+
 # Flutter Blues Plugin
 
 Blues is a bluetooth plugin for [Flutter](http://www.flutter.io) and provides Bluetooth LE connectivity for both iOS and Android.
